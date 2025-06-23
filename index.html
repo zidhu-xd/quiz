@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Quiz for My Love</title>
+    <title>Memory Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rounded+Mplus+1c:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: black;
-            color: #00ff00; /* Green for main font */
+            color: #ffffff; /* Green for main font */
             font-family: 'Press Start 2P', cursive;
             display: flex;
             flex-direction: column;
@@ -37,7 +37,7 @@
         #question-text {
             font-size: 16px;
             margin-bottom: 20px;
-            color: #00ffff; /* Cyan for question text */
+            color: #1bff00; /* Cyan for question text */
         }
         #timer {
             font-size: 12px;
@@ -121,7 +121,7 @@
         footer {
             position: fixed;
             bottom: 20px;
-            color: #0013ff;
+            color: #f11317;
             font-family: 'Quicksand', sans-serif;
             font-weight: 700;
             font-size: 15px;
@@ -177,9 +177,7 @@
     </style>
 </head>
 <body>
-    <img src="pixel-left.gif" alt="Pixel Left" class="pixel-gif-left" onerror="console.error('Failed to load pixel-left.gif')">
-    <img src="pixel-right.gif" alt="Pixel Right" class="pixel-gif-right" onerror="console.error('Failed to load pixel-right.gif')">
-    <div id="game-container">
+        <div id="game-container">
         <div id="question-container">
             <p id="question-number"></p>
             <p id="timer"></p>
@@ -211,7 +209,7 @@
             </div>
         </div>
     </div>
-    <footer>Made with 💕 by ZidhuXD</footer>
+    <footer>Made with ‪‪❤︎‬ by ZidhuXD</footer>
     <script>
         // WARNING: Telegram bot token is client-side (insecure for public use).
         // For production, use a server-side proxy or restrict bot permissions via BotFather.
@@ -489,7 +487,7 @@
             const buttons = document.querySelectorAll(".option-button");
             buttons.forEach(btn => btn.disabled = true);
             // Highlight selected button
-            button.style.backgroundColor = '#2a09bd'; // Green hover highlight
+            button.style.backgroundColor = '#164dc1'; // Green hover highlight
             button.style.color = 'black';
             // Delay to show selection
             setTimeout(() => {
