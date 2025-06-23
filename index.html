@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Quiz</title>
+    <title>Memory Quiz for My Love</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rounded+Mplus+1c:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
@@ -71,6 +71,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.8);
+            z-index: 1000; /* Above pixel GIFs */
         }
         .popup-content {
             position: absolute;
@@ -123,19 +124,38 @@
             position: fixed;
             bottom: 20px;
             color: #0013ff;
-            font-family: 'Quicksand', sans-serif; /* Bold round-edge font */
+            font-family: 'Quicksand', sans-serif;
             font-weight: 700;
             font-size: 15px;
             text-align: center;
             animation: heartbeat 2s infinite;
+            z-index: 2; /* Above pixel GIFs, below popups */
         }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        /* Pixel GIF styles */
+        .pixel-gif-left, .pixel-gif-right {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            max-width: 60px; /* Size for pixel art */
+            z-index: 1; /* Below popups and footer */
+            animation: bounce 1.5s infinite;
+            image-rendering: pixelated;
         }
-        /* Responsive adjustments for smaller screens */
+        .pixel-gif-left {
+            left: 10px;
+        }
+        .pixel-gif-right {
+            right: 10px;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(-60%); }
+        }
+        /* Hide GIFs on small screens */
         @media (max-width: 600px) {
+            .pixel-gif-left, .pixel-gif-right {
+                display: none;
+            }
             #question-container {
                 padding: 10px;
             }
@@ -161,6 +181,9 @@
     </style>
 </head>
 <body>
+    <!-- Pixel GIFs -->
+    <img src="pixel-left.gif" alt="Pixel Left" class="pixel-gif-left">
+    <img src="pixel-right.gif" alt="Pixel Right" class="pixel-gif-right">
     <div id="game-container">
         <div id="question-container">
             <p id="question-number"></p>
@@ -195,6 +218,8 @@
     </div>
     <footer>Made with <3 by ZidhuXD</footer>
     <script>
+        // WARNING: Telegram bot token is client-side (insecure for public use).
+        // For production, use a server-side proxy or restrict bot permissions via BotFather.
         const questions = [
             { question: "First day i messaged you?", options: ["March 24", "March 13", "March 16", "March 31"], correct: 3 },
             { question: "My favorite Car Model", options: ["BMW M3", "BMW M4", "BMW M5", "BMW M6"], correct: 1 },
@@ -203,9 +228,9 @@
             { question: "My fav song?", options: ["Sweater weather", "I Wanna Be Yours", "Blue", "Heat Waves"], correct: 3 },
             { question: "My Fav youtube channel?", options: ["Beta squad", "Mr Beast", "Mark Rober", "IShowSpeed"], correct: 0 },
             { question: "My Fav Sport Car Brand", options: ["Porsche", "Lamborghini", "McLaren", "Maserati"], correct: 1 },
-            { question: "My Fav Mobile Game?", options: ["BGMI", "Free Fire", "Valorent", "Call of Duty"], correct: 3 },
+            { question: "My Fav Mobile Game?", options: ["BGMI", "Free Fire", "Valorant", "Call of Duty"], correct: 3 },
             { question: "The word i use more?", options: ["Mwaah", "Ohh", "Bitch", "Hehe"], correct: 1 },
-            { question: "Web language used by this page ?", options: ["HTML+CSS", "JAVA+CSS", "JAVA+NODE", "HTML+JAVA"], correct: 0 },
+            { question: "Web language used by this page?", options: ["HTML+CSS", "JAVA+CSS", "JAVA+NODE", "HTML+JAVA"], correct: 0 },
             { question: "My Favorite color?", options: ["Black+White", "Red+Black", "Green+Blue", "Blue+Pink"], correct: 2 },
             { question: "My Fav Letter?", options: ["S", "A", "G", "X"], correct: 1 },
             { question: "My fav wrist watch brand?", options: ["Fastrack", "Casio", "Titan", "Timex"], correct: 2 },
@@ -231,12 +256,11 @@
             if (navigator.getBattery) {
                 navigator.getBattery().then(battery => {
                     batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs:No errors Found)`;
+                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
                     sendMessageToTelegram(message);
                 });
             } else {
-                const message = `
-                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs:No errors Found)`;
+                const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
                 sendMessageToTelegram(message);
             }
         };
@@ -319,7 +343,7 @@
                     btn.disabled = false;
                 });
                 nextQuestion();
-            }, 500); // 1-second delay
+            }, 500); // 500ms delay
         }
 
         function nextQuestion() {
@@ -382,8 +406,8 @@
                         sendMessageToTelegram(message);
                     }
                 }, 2000);
-            }, 3000); // Changed from 1500 to 3000 for 3 seconds
-        }
+            }, 3000); // 3 seconds for uploading text
+        }                        
     </script>
 </body>
 </html>
