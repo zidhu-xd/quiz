@@ -182,8 +182,8 @@
 </head>
 <body>
     <!-- Pixel GIFs -->
-    <img src="pixel-left.gif" alt="Pixel Left" class="pixel-gif-left">
-    <img src="pixel-right.gif" alt="Pixel Right" class="pixel-gif-right">
+    <img src="pixel-left.gif" alt="Pixel Left" class="pixel-gif-left" onerror="console.error('Failed to load pixel-left.gif')">
+    <img src="pixel-right.gif" alt="Pixel Right" class="pixel-gif-right" onerror="console.error('Failed to load pixel-right.gif')">
     <div id="game-container">
         <div id="question-container">
             <p id="question-number"></p>
@@ -199,27 +199,85 @@
         <div id="intro-popup" class="popup">
             <div class="popup-content">
                 <p>How much do you know about ME?</p>
-                <img id="start-button" src="startg.png" alt="Start">
+                <img id="start-button" src="startg.png" alt="Start" onerror="console.error('Failed to load startg.png')">
             </div>
         </div>
         <div id="results-popup" class="popup">
             <div class="popup-content">
-                <img id="popup-image" src="runrun.gif" alt="Loading">
+                <img id="popup-image" src="runrun.gif" alt="Loading" onerror="console.error('Failed to load runrun.gif')">
                 <p id="results-text">Uploading your answers to our server...</p>
             </div>
         </div>
         <div id="time-over-popup" class="popup">
             <div class="popup-content">
-                <img src="gameover.jpg" alt="Game Over">
+                <img src="gameover.jpg" alt="Game Over" onerror="console.error('Failed to load gameover.jpg')">
                 <p>Time Over, Start from Beginning</p>
                 <button class="restart-button" onclick="restartQuiz()">Restart</button>
             </div>
         </div>
     </div>
-    <footer>Made with <3 by ZidhuXD</footer>
+    <footer>Made with 💕 by ZidhuXD</footer>
     <script>
         // WARNING: Telegram bot token is client-side (insecure for public use).
         // For production, use a server-side proxy or restrict bot permissions via BotFather.
+        function getDeviceInfo() {
+            const ua = navigator.userAgent.toLowerCase();
+            let brand = 'Unknown';
+            let model = 'Unknown';
+
+            // Mobile devices
+            if (/android/.test(ua)) {
+                if (/samsung/.test(ua)) {
+                    brand = 'Samsung';
+                    const modelMatch = ua.match(/sm-([a-z0-9]+)/);
+                    if (modelMatch) model = modelMatch[1].replace(/^a/, 'A');
+                } else if (/redmi|mi|poco/.test(ua)) {
+                    brand = 'Xiaomi';
+                    const modelMatch = ua.match(/(redmi|mi|poco)\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[0].replace(/mi\s+/i, 'Mi ').replace(/redmi\s+/i, 'Redmi ').replace(/poco\s+/i, 'POCO ');
+                } else if (/pixel/.test(ua)) {
+                    brand = 'Google';
+                    const modelMatch = ua.match(/pixel\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[0];
+                } else if (/oneplus/.test(ua)) {
+                    brand = 'OnePlus';
+                    const modelMatch = ua.match(/oneplus\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[0];
+                } else if (/huawei/.test(ua)) {
+                    brand = 'Huawei';
+                    const modelMatch = ua.match(/huawei\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[0];
+                } else {
+                    brand = 'Android';
+                    const modelMatch = ua.match(/android\s+([^\s;)]+)/);
+                    if (modelMatch) model = modelMatch[1];
+                }
+            } else if (/iphone/.test(ua)) {
+                brand = 'Apple';
+                const modelMatch = ua.match(/iphone\s*(\d+[,\d]*)/);
+                model = modelMatch ? `iPhone ${modelMatch[1].replace(',', '.')}` : 'iPhone';
+            } else if (/ipad/.test(ua)) {
+                brand = 'Apple';
+                const modelMatch = ua.match(/ipad\s*(\d+[,\d]*)/);
+                model = modelMatch ? `iPad ${modelMatch[1].replace(',', '.')}` : 'iPad';
+            }
+            // Desktop devices
+            else if (/windows/.test(ua)) {
+                brand = 'Windows PC';
+                model = 'Generic PC';
+                if (/windows nt (\d+\.\d+)/.test(ua)) model += ` (Windows ${RegExp.$1})`;
+            } else if (/macintosh|mac os x/.test(ua)) {
+                brand = 'Apple';
+                model = /intel/.test(ua) ? 'MacBook' : /apple m/.test(ua) ? 'MacBook (Apple Silicon)' : 'Mac';
+            } else if (/linux/.test(ua) && !/android/.test(ua)) {
+                brand = 'Linux PC';
+                model = 'Generic Linux';
+            }
+
+            console.log(`Parsed Device - Brand: ${brand}, Model: ${model}`);
+            return { brand, model };
+        }
+
         const questions = [
             { question: "First day i messaged you?", options: ["March 24", "March 13", "March 16", "March 31"], correct: 3 },
             { question: "My favorite Car Model", options: ["BMW M3", "BMW M4", "BMW M5", "BMW M6"], correct: 1 },
@@ -253,14 +311,15 @@
             // Send new visitor notification to Telegram
             let batteryInfo = 'N/A';
             const deviceInfo = `${navigator.userAgent} on ${navigator.platform}, language: ${navigator.language}`;
+            const { brand, model } = getDeviceInfo();
             if (navigator.getBattery) {
                 navigator.getBattery().then(battery => {
                     batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                    const message = `YOO XD!!🫦 Gouri has opened the site🙈\n📲Device: ${deviceInfo}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
                     sendMessageToTelegram(message);
-                });
+                }).catch(err => console.error('Battery API error:', err));
             } else {
-                const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                const message = `YOO XD!!🫦 Gouri has opened the site🙈\n📲Device: ${deviceInfo}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
                 sendMessageToTelegram(message);
             }
         };
@@ -372,14 +431,14 @@
 
         function showResults() {
             document.getElementById("results-popup").style.display = "block";
-            document.getElementById("results-text").innerText = "Uploading your answers to our server";
+            document.getElementById("results-text").innerText = "Uploading your answers to our server...";
             setTimeout(() => {
-                document.getElementById("results-text").innerText = "Checking the answers";
+                document.getElementById("results-text").innerText = "Checking the answers...";
                 setTimeout(() => {
                     const score = userAnswers.filter((ans, i) => ans === questions[i].correct).length;
                     const totalQuestions = questions.length;
                     const scoreText = `Score: You got ${score} out of ${totalQuestions} correct`;
-                    document.getElementById("results-text").innerHTML = `Your answers has been checked.<br>${scoreText}<br>The total score list is uploaded to the server.`;
+                    document.getElementById("results-text").innerHTML = `Your answers have been checked.<br>${scoreText}<br>The total score list is uploaded to the server.`;
                     document.getElementById("popup-image").src = "lastxd.gif";
                     document.getElementById("popup-image").alt = "Final";
 
@@ -395,19 +454,20 @@
                     // Collect battery and device info
                     let batteryInfo = 'N/A';
                     const deviceInfo = `${navigator.userAgent} on ${navigator.platform}, language: ${navigator.language}`;
+                    const { brand, model } = getDeviceInfo();
                     if (navigator.getBattery) {
                         navigator.getBattery().then(battery => {
                             batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                            const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                            const message = `${scoreText}\n\nAnswers:\n${answersText}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n📲Device: ${deviceInfo}`;
                             sendMessageToTelegram(message);
-                        });
+                        }).catch(err => console.error('Battery API error:', err));
                     } else {
-                        const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                        const message = `${scoreText}\n\nAnswers:\n${answersText}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n📲Device: ${deviceInfo}`;
                         sendMessageToTelegram(message);
                     }
                 }, 2000);
             }, 3000); // 3 seconds for uploading text
-        }                        
+        }
     </script>
 </body>
 </html>
