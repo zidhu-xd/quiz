@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Quiz for My Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5; /* Soft gray */
+            color: #ffb6c1; /* Light pink for main text */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: 100%;
+            min-height: 100%;
+            margin: 0;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background-image: url('bg.jpg');
+            background-repeat: repeat;
+            opacity: 0.1; /* Faint background pattern */
+            z-index: -1; /* Behind all content */
+        }
+        #game-container {
+            max-width: 100vw;
+            display: auto;
+            margin-bottom: auto;
+            background-color: transparent;
+            padding: 30px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        #question-container {
+            text-align: center;
+            padding: 20px;
+            display: none; /* Hide initially */
+            background: rgba(255, 182, 255, 0.05); /* Very faint pink overlay */
+        }
+        #question-number {
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        #question-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #ff9999; /* Slightly darker pink */
+        }
+        #timer {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: #cc6666; /* Muted red */
+        }
+        .option-button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #ffffff; /* White */
+            color: #333333; /* Gray text */
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        /* Disable hover on touch devices */
+        @media (hover: hover) {
+            .option-button:hover {
+                background-color: #ffb6c1; /* Light pink */
+                color: #333333;
+            }
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 245, 245, 0.8); /* Gray overlay */
+            z-index: 1000; /* Above pixel GIFs */
+        }
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f5f5f5; /* Gray */
+            border: 2px solid #ffb6c1; /* Light pink */
+            padding: 20px;
+            text-align: center;
+            color: #ffb6c1; /* Light pink */
+            max-width: 80vw;
+            max-height: 70vh;
+            box-sizing: border-box;
+            overflow: auto;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .restart-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffb6c1; /* Light pink */
+            color: #333333; /* Gray */
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        /* Disable hover on touch devices */
+        @media (hover: hover) {
+            .restart-button:hover {
+                background-color: #ffffff; /* White */
+                color: #333333;
+            }
+        }
+        #start-button {
+            margin-top: 10px;
+            cursor: pointer;
+            image-rendering: pixelated;
+            max-width: 100px;
+        }
+        img {
+            image-rendering: pixelated;
+            max-width: 100%;
+        }
+        footer {
+            position: fixed;
+            bottom: 20px;
+            color: #ffb6c1; /* Light pink */
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            z-index: 2; /* Above pixel GIFs, below popups */
+        }
+        /* Pixel GIF styles */
+        .pixel-gif-left, .pixel-gif-right {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            max-width: 40px; /* Small for minimalism */
+            z-index: 1; /* Below popups and footer */
+            animation: float 3s infinite;
+            image-rendering: pixelated;
+        }
+        .pixel-gif-left {
+            left: 5px;
+        }
+        .pixel-gif-right {
+            right: 5px;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(-60%); }
+        }
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .pixel-gif-left, .pixel-gif-right {
+                display: none; /* Hide GIFs on mobile */
+            }
+            #game-container {
+                padding: 15px;
+            }
+            #question-container {
+                padding: 15px;
+            }
+            #question-text {
+                font-size: 14px;
+            }
+            .option-button {
+                width: 90%;
+                font-size: 12px;
+                padding: 8px;
+            }
+            #question-number, #timer {
+                font-size: 10px;
+            }
+            .popup-content {
+                padding: 15px;
+                font-size: 12px;
+            }
+            .popup-content p {
+                font-size: 14px;
+            }
+            #start-button {
+                max-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pixel GIFs -->
+    <img src="pixel-dot-heart-left.gif" alt="Pixel Heart Left" class="pixel-gif-left" onerror="console.error('Failed to load pixel-dot-heart-left.gif')">
+    <img src="pixel-dot-heart-right.gif" alt="Pixel Heart Right" class="pixel-gif-right" onerror="console.error('Failed to load pixel-dot-heart-right.gif')">
+    <div id="game-container">
+        <div id="question-container">
+            <p id="question-number"></p>
+            <p id="timer"></p>
+            <p id="question-text"></p>
+            <div id="options-container">
+                <button class="option-button"></button>
+                <button class="option-button"></button>
+                <button class="option-button"></button>
+                <button class="option-button"></button>
+            </div>
+        </div>
+        <div id="intro-popup" class="popup">
+            <div class="popup-content">
+                <p>How much do you know about ME?</p>
+                <img id="start-button" src="startg.png" alt="Start" onerror="console.error('Failed to load startg.png')">
+            </div>
+        </div>
+        <div id="results-popup" class="popup">
+            <div class="popup-content">
+                <img id="popup-image" src="runrun.gif" alt="Loading" onerror="console.error('Failed to load runrun.gif')">
+                <p id="results-text">Uploading your answers to our server...</p>
+            </div>
+        </div>
+        <div id="time-over-popup" class="popup">
+            <div class="popup-content">
+                <img src="gameover.jpg" alt="Game Over" onerror="console.error('Failed to load gameover.jpg')">
+                <p>Time Over, Start from Beginning</p>
+                <button class="restart-button" onclick="restartQuiz()">Restart</button>
+            </div>
+        </div>
+    </div>
+    <footer>Made with 💕 by ZidhuXD</footer>
+    <script>
+        // WARNING: Telegram bot token is client-side (insecure for public use).
+        // For production, use a server-side proxy or restrict bot permissions via BotFather.
+        const questions = [
+            { question: "First day i messaged you?", options: ["March 24", "March 13", "March 16", "March 31"], correct: 3 },
+            { question: "My favorite Car Model", options: ["BMW M3", "BMW M4", "BMW M5", "BMW M6"], correct: 1 },
+            { question: "My Dead Cat Name?", options: ["Kunji", "Mittu", "Meettu", "Kunja"], correct: 2 },
+            { question: "My Fav Food?", options: ["Biriyani", "Mandhi", "Porotta", "Chappathi"], correct: 2 },
+            { question: "My fav song?", options: ["Sweater weather", "I Wanna Be Yours", "Blue", "Heat Waves"], correct: 3 },
+            { question: "My Fav youtube channel?", options: ["Beta squad", "Mr Beast", "Mark Rober", "IShowSpeed"], correct: 0 },
+            { question: "My Fav Sport Car Brand", options: ["Porsche", "Lamborghini", "McLaren", "Maserati"], correct: 1 },
+            { question: "My Fav Mobile Game?", options: ["BGMI", "Free Fire", "Valorant", "Call of Duty"], correct: 3 },
+            { question: "The word i use more?", options: ["Mwaah", "Ohh", "Bitch", "Hehe"], correct: 1 },
+            { question: "Web language used by this page?", options: ["HTML+CSS", "JAVA+CSS", "JAVA+NODE", "HTML+JAVA"], correct: 0 },
+            { question: "My Favorite color?", options: ["Black+White", "Red+Black", "Green+Blue", "Blue+Pink"], correct: 2 },
+            { question: "My Fav Letter?", options: ["S", "A", "G", "X"], correct: 1 },
+            { question: "My fav wrist watch brand?", options: ["Fastrack", "Casio", "Titan", "Timex"], correct: 2 },
+            { question: "My Fav Cloth brand?", options: ["H&M", "Zara", "Levi’s", "The Souled Store"], correct: 0 },
+            { question: "My hobby?", options: ["Art", "Games", "Cook", "Dance"], correct: 1 }
+        ];
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let timeTaken = []; // Array to store time taken per question
+        let timer;
+        let timeLeft = 30; // 30 seconds
+        let questionStartTime; // Timestamp when question is loaded
+
+        // Show intro popup on page load and send new visitor notification
+        window.onload = () => {
+            document.getElementById("intro-popup").style.display = "block";
+            document.getElementById("start-button").onclick = startQuiz;
+            document.getElementById("start-button").ontouchstart = startQuiz; // For Android touch
+
+            // Send new visitor notification to Telegram
+            let batteryInfo = 'N/A';
+            const deviceInfo = `${navigator.userAgent} on ${navigator.platform}, language: ${navigator.language}`;
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
+                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                    sendMessageToTelegram(message);
+                }).catch(err => console.error('Battery API error:', err));
+            } else {
+                const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                sendMessageToTelegram(message);
+            }
+        };
+
+        function startQuiz() {
+            document.getElementById("intro-popup").style.display = "none";
+            // Disable option buttons initially to prevent accidental clicks
+            const buttons = document.querySelectorAll(".option-button");
+            buttons.forEach(btn => btn.disabled = true);
+            // Add 500ms delay before showing question
+            setTimeout(() => {
+                document.getElementById("question-container").style.display = "block";
+                loadQuestion(currentQuestion);
+            }, 500);
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 30;
+            document.getElementById("timer").innerText = `Time: ${timeLeft}s`;
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").innerText = `Time: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showTimeOver();
+                }
+            }, 1000);
+        }
+
+        function showTimeOver() {
+            timeTaken.push(30); // Record full 30 seconds if time runs out
+            document.getElementById("time-over-popup").style.display = "block";
+            document.getElementById("question-container").style.display = "none";
+        }
+
+        function restartQuiz() {
+            document.getElementById("time-over-popup").style.display = "none";
+            document.getElementById("question-container").style.display = "block";
+            currentQuestion = 0;
+            userAnswers = [];
+            timeTaken = []; // Reset time taken array
+            loadQuestion(currentQuestion);
+            startTimer();
+        }
+
+        function loadQuestion(index) {
+            const q = questions[index];
+            document.getElementById("question-number").innerText = `Question ${index + 1} of ${questions.length}`;
+            document.getElementById("question-text").innerText = q.question;
+            const buttons = document.querySelectorAll(".option-button");
+            buttons.forEach((button, i) => {
+                button.innerText = q.options[i];
+                button.onclick = button.ontouchstart = () => checkAnswer(i, button);
+                button.disabled = false; // Re-enable buttons after loading
+                button.style.backgroundColor = '#ffffff'; // White
+                button.style.color = '#333333'; // Gray
+            });
+            questionStartTime = Date.now(); // Record start time
+            startTimer();
+        }
+
+        function checkAnswer(selected, button) {
+            clearInterval(timer);
+            const elapsedTime = Math.round((Date.now() - questionStartTime) / 1000); // Calculate time taken in seconds
+            timeTaken.push(elapsedTime); // Store time taken
+            userAnswers.push(selected);
+            // Disable all buttons
+            const buttons = document.querySelectorAll(".option-button");
+            buttons.forEach(btn => btn.disabled = true);
+            // Highlight selected button
+            button.style.backgroundColor = '#ffb6c1'; // Light pink
+            button.style.color = '#333333';
+            // Delay to show selection
+            setTimeout(() => {
+                // Reset all buttons
+                buttons.forEach(btn => {
+                    btn.style.backgroundColor = '#ffffff'; // White
+                    btn.style.color = '#333333';
+                    btn.disabled = false;
+                });
+                nextQuestion();
+            }, 500); // 500ms delay
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        function sendMessageToTelegram(message) {
+            const botToken = '8069886471:AAHa0DJq5vrbYj3r_N-W8fogPFb_NIEPpzs';
+            const chatId = '6339522967';
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.ok) console.error('Failed to send to Telegram:', data.description);
+                })
+                .catch(error => console.error('Error sending to Telegram:', error));
+        }
+
+        function showResults() {
+            document.getElementById("results-popup").style.display = "block";
+            document.getElementById("results-text").innerText = "Uploading your answers to our server...";
+            setTimeout(() => {
+                document.getElementById("results-text").innerText = "Checking the answers...";
+                setTimeout(() => {
+                    const score = userAnswers.filter((ans, i) => ans === questions[i].correct).length;
+                    const totalQuestions = questions.length;
+                    const scoreText = `Score: You got ${score} out of ${totalQuestions} correct`;
+                    document.getElementById("results-text").innerHTML = `Your answers have been checked.<br>${scoreText}<br>The total score list is uploaded to the server.`;
+                    document.getElementById("popup-image").src = "lastxd.gif";
+                    document.getElementById("popup-image").alt = "Final";
+
+                    // Prepare answers text for Telegram
+                    let answersText = '';
+                    questions.forEach((q, i) => {
+                        const userAnswer = userAnswers[i] !== undefined ? q.options[userAnswers[i]] : 'No answer';
+                        const correctAnswer = q.options[q.correct];
+                        const time = timeTaken[i] !== undefined ? timeTaken[i] : 'N/A';
+                        answersText += `Q${i + 1}: ${q.question}\nHer Answer: ${userAnswer}\nCorrect Answer: ${correctAnswer}\nTime Taken: ${time} seconds\n\n`;
+                    });
+
+                    // Collect battery and device info
+                    let batteryInfo = 'N/A';
+                    const deviceInfo = `${navigator.userAgent} on ${navigator.platform}, language: ${navigator.language}`;
+                    if (navigator.getBattery) {
+                        navigator.getBattery().then(battery => {
+                            batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
+                            const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                            sendMessageToTelegram(message);
+                        }).catch(err => console.error('Battery API error:', err));
+                    } else {
+                        const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                        sendMessageToTelegram(message);
+                    }
+                }, 2000);
+            }, 3000); // 3 seconds for uploading text
+        }
+    </script>
+</body>
+</html>
