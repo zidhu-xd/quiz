@@ -227,15 +227,27 @@
 
             // Mobile devices
             if (/android/.test(ua)) {
+                // Nothing
+                if (/nothing/.test(ua)) {
+                    brand = 'Nothing';
+                    const modelMatch = ua.match(/; (a\d+)/) || ua.match(/nothing; ([^\s;)]+)/);
+                    if (modelMatch) {
+                        const modelCode = modelMatch[1].toUpperCase();
+                        if (modelCode === 'A142') model = 'Phone (2a)';
+                        else if (modelCode === 'A104') model = 'Phone (1)';
+                        else if (modelCode === 'A065') model = 'Phone (2)';
+                        else model = modelCode;
+                    }
+                }
                 // Samsung
-                if (/samsung/.test(ua)) {
+                else if (/samsung/.test(ua)) {
                     brand = 'Samsung';
                     const modelMatch = ua.match(/sm-([a-z0-9]+)/);
                     if (modelMatch) {
                         const modelCode = modelMatch[1].toUpperCase();
-                        if (/^A\d+/.test(modelCode)) model = 'A' + modelCode.match(/\d+/)[0];
-                        else if (/^S\d+/.test(modelCode)) model = 'S' + modelCode.match(/\d+/)[0];
-                        else if (/^NOTE\d+/.test(modelCode)) model = 'Note ' + modelCode.match(/\d+/)[0];
+                        if (/^A\d+/.test(modelCode)) model = 'Galaxy A' + modelCode.match(/\d+/)[0];
+                        else if (/^S\d+/.test(modelCode)) model = 'Galaxy S' + modelCode.match(/\d+/)[0];
+                        else if (/^NOTE\d+/.test(modelCode)) model = 'Galaxy Note ' + modelCode.match(/\d+/)[0];
                         else model = modelCode;
                     }
                 }
@@ -277,9 +289,11 @@
                 }
                 // Generic Android
                 else {
-                    brand = 'Android';
-                    const versionMatch = ua.match(/android\s+([^\s;)]+)/);
-                    if (versionMatch) model = `Android ${versionMatch[1]}`;
+                    brand = 'Unknown Android Device';
+                    const versionMatch = ua.match(/android\s+([0-9.]+)/);
+                    model = versionMatch ? `Android ${versionMatch[1]}` : 'Unknown';
+                    const modelMatch = ua.match(/android\s+[0-9.]+;\s*([^\s;)]+)/);
+                    if (modelMatch && modelMatch[1].toLowerCase() !== 'k') model = modelMatch[1];
                 }
             } else if (/iphone/.test(ua)) {
                 brand = 'Apple';
