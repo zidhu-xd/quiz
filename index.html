@@ -56,7 +56,6 @@
             font-size: 14px;
             cursor: pointer;
         }
-        /* Disable hover on touch devices */
         @media (hover: hover) {
             .option-button:hover {
                 background-color: white;
@@ -103,7 +102,6 @@
             font-size: 14px;
             cursor: pointer;
         }
-        /* Disable hover on touch devices */
         @media (hover: hover) {
             .restart-button:hover {
                 background-color: white;
@@ -131,7 +129,6 @@
             animation: heartbeat 2s infinite;
             z-index: 2; /* Above pixel GIFs, below popups */
         }
-        /* Pixel GIF styles */
         .pixel-gif-left, .pixel-gif-right {
             position: fixed;
             top: 50%;
@@ -151,7 +148,6 @@
             0%, 100% { transform: translateY(-50%); }
             50% { transform: translateY(-60%); }
         }
-        /* Hide GIFs on small screens */
         @media (max-width: 600px) {
             .pixel-gif-left, .pixel-gif-right {
                 display: none;
@@ -181,7 +177,6 @@
     </style>
 </head>
 <body>
-    <!-- Pixel GIFs -->
     <img src="pixel-left.gif" alt="Pixel Left" class="pixel-gif-left" onerror="console.error('Failed to load pixel-left.gif')">
     <img src="pixel-right.gif" alt="Pixel Right" class="pixel-gif-right" onerror="console.error('Failed to load pixel-right.gif')">
     <div id="game-container">
@@ -233,10 +228,14 @@
                     const modelMatch = ua.match(/; (a\d+)/) || ua.match(/nothing; ([^\s;)]+)/);
                     if (modelMatch) {
                         const modelCode = modelMatch[1].toUpperCase();
-                        if (modelCode === 'A142') model = 'Phone (2a)';
-                        else if (modelCode === 'A104') model = 'Phone (1)';
-                        else if (modelCode === 'A065') model = 'Phone (2)';
-                        else model = modelCode;
+                        const nothingModels = {
+                            'A104': 'Phone (1)',
+                            'A142': 'Phone (2a)',
+                            'A065': 'Phone (2)',
+                            'A143': 'Phone (2a) Plus',
+                            'A145': 'Phone (3)'
+                        };
+                        model = nothingModels[modelCode] || modelCode;
                     }
                 }
                 // Samsung
@@ -245,46 +244,101 @@
                     const modelMatch = ua.match(/sm-([a-z0-9]+)/);
                     if (modelMatch) {
                         const modelCode = modelMatch[1].toUpperCase();
-                        if (/^A\d+/.test(modelCode)) model = 'Galaxy A' + modelCode.match(/\d+/)[0];
-                        else if (/^S\d+/.test(modelCode)) model = 'Galaxy S' + modelCode.match(/\d+/)[0];
-                        else if (/^NOTE\d+/.test(modelCode)) model = 'Galaxy Note ' + modelCode.match(/\d+/)[0];
+                        const samsungModels = {
+                            'A135F': 'Galaxy A13',
+                            'A236B': 'Galaxy A23',
+                            'A346E': 'Galaxy A34',
+                            'A546E': 'Galaxy A54',
+                            'S911B': 'Galaxy S23',
+                            'S918B': 'Galaxy S23 Ultra',
+                            'S921B': 'Galaxy S24',
+                            'S928B': 'Galaxy S24 Ultra',
+                            'N986B': 'Galaxy Note 20 Ultra',
+                            'F926B': 'Galaxy Z Fold 3',
+                            'F936B': 'Galaxy Z Fold 4',
+                            'M526BR': 'Galaxy M52'
+                        };
+                        if (/^A\d+/.test(modelCode)) model = samsungModels[modelCode] || `Galaxy A${modelCode.match(/\d+/)[0]}`;
+                        else if (/^S\d+/.test(modelCode)) model = samsungModels[modelCode] || `Galaxy S${modelCode.match(/\d+/)[0]}`;
+                        else if (/^N\d+/.test(modelCode)) model = samsungModels[modelCode] || `Galaxy Note ${modelCode.match(/\d+/)[0]}`;
+                        else if (/^F\d+/.test(modelCode)) model = samsungModels[modelCode] || `Galaxy Z Fold${modelCode.match(/\d+/)[0]}`;
                         else model = modelCode;
                     }
                 }
                 // Xiaomi (Redmi, Mi, POCO)
                 else if (/redmi|mi|poco/.test(ua)) {
                     brand = 'Xiaomi';
-                    const modelMatch = ua.match(/(redmi|mi|poco)\s+([^\s)]+)/);
-                    if (modelMatch) model = modelMatch[0].replace(/mi\s+/i, 'Mi ').replace(/redmi\s+/i, 'Redmi ').replace(/poco\s+/i, 'POCO ');
+                    const modelMatch = ua.match(/(redmi|mi|poco)\s+([^\s;)]+)/);
+                    if (modelMatch) {
+                        const prefix = modelMatch[1].toLowerCase();
+                        const modelName = modelMatch[2].toLowerCase();
+                        const xiaomiModels = {
+                            'note 10': 'Redmi Note 10',
+                            'note 10 pro': 'Redmi Note 10 Pro',
+                            'note 11': 'Redmi Note 11',
+                            'note 12': 'Redmi Note 12',
+                            '12': 'Redmi 12',
+                            '13': 'Redmi 13',
+                            'k40': 'Redmi K40',
+                            'k50': 'Redmi K50',
+                            '11t': 'Mi 11T',
+                            '12 pro': 'Mi 12 Pro',
+                            'x3 pro': 'POCO X3 Pro',
+                            'f3': 'POCO F3'
+                        };
+                        model = xiaomiModels[modelName] || modelMatch[0].replace(/mi\s+/i, 'Mi ').replace(/redmi\s+/i, 'Redmi ').replace(/poco\s+/i, 'POCO ');
+                    }
+                }
+                // Realme
+                else if (/realme/.test(ua)) {
+                    brand = 'Realme';
+                    const modelMatch = ua.match(/realme\s+([^\s;)]+)/) || ua.match(/rmx([0-9]+)/);
+                    if (modelMatch) {
+                        const modelCode = modelMatch[1].toUpperCase();
+                        const realmeModels = {
+                            'RMX3471': 'GT Neo',
+                            'RMX3370': '9 Pro',
+                            'RMX3081': '8',
+                            'RMX2151': '7',
+                            'RMX3511': 'Narzo 50',
+                            'RMX3561': 'Narzo 60',
+                            'RMX3686': 'GT Neo 3',
+                            '9': '9',
+                            '10': '10',
+                            'C35': 'C35',
+                            'C55': 'C55'
+                        };
+                        model = realmeModels[modelCode] || modelCode;
+                    }
                 }
                 // Google Pixel
                 else if (/pixel/.test(ua)) {
                     brand = 'Google';
-                    const modelMatch = ua.match(/pixel\s+([^\s)]+)/);
+                    const modelMatch = ua.match(/pixel\s+([^\s;)]+)/);
                     if (modelMatch) model = 'Pixel ' + modelMatch[1];
                 }
                 // OnePlus
                 else if (/oneplus/.test(ua)) {
                     brand = 'OnePlus';
-                    const modelMatch = ua.match(/oneplus\s+([^\s)]+)/);
+                    const modelMatch = ua.match(/oneplus\s+([^\s;)]+)/);
                     if (modelMatch) model = modelMatch[1];
                 }
                 // Huawei
                 else if (/huawei/.test(ua)) {
                     brand = 'Huawei';
-                    const modelMatch = ua.match(/huawei\s+([^\s)]+)/);
+                    const modelMatch = ua.match(/huawei\s+([^\s;)]+)/);
                     if (modelMatch) model = modelMatch[1];
                 }
                 // Oppo
                 else if (/oppo/.test(ua)) {
                     brand = 'Oppo';
-                    const modelMatch = ua.match(/oppo\s+([^\s)]+)/);
+                    const modelMatch = ua.match(/oppo\s+([^\s;)]+)/);
                     if (modelMatch) model = modelMatch[1];
                 }
                 // Vivo
                 else if (/vivo/.test(ua)) {
                     brand = 'Vivo';
-                    const modelMatch = ua.match(/vivo\s+([^\s)]+)/);
+                    const modelMatch = ua.match(/vivo\s+([^\s;)]+)/);
                     if (modelMatch) model = modelMatch[1];
                 }
                 // Generic Android
@@ -294,6 +348,7 @@
                     model = versionMatch ? `Android ${versionMatch[1]}` : 'Unknown';
                     const modelMatch = ua.match(/android\s+[0-9.]+;\s*([^\s;)]+)/);
                     if (modelMatch && modelMatch[1].toLowerCase() !== 'k') model = modelMatch[1];
+                    if (modelMatch && modelMatch[1].toLowerCase() === 'k') model = 'Unknown Model';
                 }
             } else if (/iphone/.test(ua)) {
                 brand = 'Apple';
@@ -317,7 +372,7 @@
                 model = 'Generic Linux';
             }
 
-            console.log(`Parsed Device - Brand: ${brand}, Model: ${model}`);
+            console.log(`Parsed Device - Brand: ${brand}, Model: ${model}, User Agent: ${navigator.userAgent}`);
             return { brand, model };
         }
 
