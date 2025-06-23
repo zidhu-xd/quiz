@@ -227,30 +227,59 @@
 
             // Mobile devices
             if (/android/.test(ua)) {
+                // Samsung
                 if (/samsung/.test(ua)) {
                     brand = 'Samsung';
                     const modelMatch = ua.match(/sm-([a-z0-9]+)/);
-                    if (modelMatch) model = modelMatch[1].replace(/^a/, 'A');
-                } else if (/redmi|mi|poco/.test(ua)) {
+                    if (modelMatch) {
+                        const modelCode = modelMatch[1].toUpperCase();
+                        if (/^A\d+/.test(modelCode)) model = 'A' + modelCode.match(/\d+/)[0];
+                        else if (/^S\d+/.test(modelCode)) model = 'S' + modelCode.match(/\d+/)[0];
+                        else if (/^NOTE\d+/.test(modelCode)) model = 'Note ' + modelCode.match(/\d+/)[0];
+                        else model = modelCode;
+                    }
+                }
+                // Xiaomi (Redmi, Mi, POCO)
+                else if (/redmi|mi|poco/.test(ua)) {
                     brand = 'Xiaomi';
                     const modelMatch = ua.match(/(redmi|mi|poco)\s+([^\s)]+)/);
                     if (modelMatch) model = modelMatch[0].replace(/mi\s+/i, 'Mi ').replace(/redmi\s+/i, 'Redmi ').replace(/poco\s+/i, 'POCO ');
-                } else if (/pixel/.test(ua)) {
+                }
+                // Google Pixel
+                else if (/pixel/.test(ua)) {
                     brand = 'Google';
                     const modelMatch = ua.match(/pixel\s+([^\s)]+)/);
-                    if (modelMatch) model = modelMatch[0];
-                } else if (/oneplus/.test(ua)) {
+                    if (modelMatch) model = 'Pixel ' + modelMatch[1];
+                }
+                // OnePlus
+                else if (/oneplus/.test(ua)) {
                     brand = 'OnePlus';
                     const modelMatch = ua.match(/oneplus\s+([^\s)]+)/);
-                    if (modelMatch) model = modelMatch[0];
-                } else if (/huawei/.test(ua)) {
+                    if (modelMatch) model = modelMatch[1];
+                }
+                // Huawei
+                else if (/huawei/.test(ua)) {
                     brand = 'Huawei';
                     const modelMatch = ua.match(/huawei\s+([^\s)]+)/);
-                    if (modelMatch) model = modelMatch[0];
-                } else {
-                    brand = 'Android';
-                    const modelMatch = ua.match(/android\s+([^\s;)]+)/);
                     if (modelMatch) model = modelMatch[1];
+                }
+                // Oppo
+                else if (/oppo/.test(ua)) {
+                    brand = 'Oppo';
+                    const modelMatch = ua.match(/oppo\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[1];
+                }
+                // Vivo
+                else if (/vivo/.test(ua)) {
+                    brand = 'Vivo';
+                    const modelMatch = ua.match(/vivo\s+([^\s)]+)/);
+                    if (modelMatch) model = modelMatch[1];
+                }
+                // Generic Android
+                else {
+                    brand = 'Android';
+                    const versionMatch = ua.match(/android\s+([^\s;)]+)/);
+                    if (versionMatch) model = `Android ${versionMatch[1]}`;
                 }
             } else if (/iphone/.test(ua)) {
                 brand = 'Apple';
