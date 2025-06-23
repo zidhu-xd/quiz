@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Quiz for My Love</title>
+    <title>Memory Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rounded+Mplus+1c:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
@@ -219,11 +219,25 @@
         let timeLeft = 30; // 30 seconds
         let questionStartTime; // Timestamp when question is loaded
 
-        // Show intro popup on page load
+        // Show intro popup on page load and send new visitor notification
         window.onload = () => {
             document.getElementById("intro-popup").style.display = "block";
             document.getElementById("start-button").onclick = startQuiz;
             document.getElementById("start-button").ontouchstart = startQuiz; // For Android touch
+
+            // Send new visitor notification to Telegram
+            let batteryInfo = 'N/A';
+            const deviceInfo = `${navigator.userAgent} on ${navigator.platform}, language: ${navigator.language}`;
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
+                    const message = `YOO!!🫦 Gouri has been opened the site🙈:\nDevice: ${deviceInfo}\nBattery: ${batteryInfo}`;
+                    sendMessageToTelegram(message);
+                });
+            } else {
+                const message = `YOO!!🫦 Gouri has been opened the site🙈:\nDevice: ${deviceInfo}\nBattery: ${batteryInfo}`;
+                sendMessageToTelegram(message);
+            }
         };
 
         function startQuiz() {
@@ -316,10 +330,9 @@
             }
         }
 
-        function sendDataToTelegram(scoreText, batteryInfo, deviceInfo, answersText) {
+        function sendMessageToTelegram(message) {
             const botToken = '8069886471:AAHa0DJq5vrbYj3r_N-W8fogPFb_NIEPpzs';
             const chatId = '6339522967';
-            const message = `${scoreText}\n\nAnswers:\n${answersText}\n\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
 
             fetch(url, {
@@ -360,13 +373,15 @@
                     if (navigator.getBattery) {
                         navigator.getBattery().then(battery => {
                             batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                            sendDataToTelegram(scoreText, batteryInfo, deviceInfo, answersText);
+                            const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                            sendMessageToTelegram(message);
                         });
                     } else {
-                        sendDataToTelegram(scoreText, batteryInfo, deviceInfo, answersText);
+                        const message = `${scoreText}\n\nAnswers:\n${answersText}\nBattery: ${batteryInfo}\nDevice: ${deviceInfo}`;
+                        sendMessageToTelegram(message);
                     }
                 }, 2000);
-            }, 1500);
+            }, 3000); // Changed from 1500 to 3000 for 3 seconds
         }
     </script>
 </body>
